@@ -2,7 +2,11 @@ import pymysql
 from flask import Flask, flash,render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
-import datetime
+import datetime as dt
+import requests
+import os
+from config import *
+
 
 import MySQLdb.cursors
 import re
@@ -264,6 +268,38 @@ def booknow():
             # print(booked)
             return redirect(url_for('booking'))
         return redirect(url_for('login'))
+
+@app.route("/forecast")
+def forecast():
+    try:
+        response = requests.get(f"{BASE_URL}/forecast?lat={LAT}&lon={LON}&units=metric&appid={API_KEY}")
+        response.raise_for_status()
+        data = response.json()
+
+        for block in data["list"]:
+            date = dt.datetime.strptime(block["dt_txt"], "%Y-%m-%d %H:%M:%S")
+            if date < dt.datetime.now() or str(date)[-8:] != "15:00:00":
+                data["list"].remove(block)
+
+        forecast_list = []
+
+        for block in data["list"]:
+            block_dict = {
+                "datetime": block["dt_txt"],
+                "temperature": block["main"]["temp"],
+                "wind": block["wind"]["speed"],
+                "description": block["weather"][0]["description"].title(),
+                "icon": block["weather"][0]["icon"]
+            }
+            forecast_list.append(block_dict)
+
+        return render_template("forecast_index.html", forecast_list=forecast_list, city=CITY.capitalize())
+    except requests.exceptions.RequestException as error:
+        return f"Error: {error}"
+
+
+
+
 
 
 if __name__ == "__main__":

@@ -63,7 +63,7 @@
                                     <form method="POST" action="/slot">
                                         <label for="t_date" style="color: black;">SELECT DATE:</label>
                                         <select name="t_date" id="t_date" required>
-                                            <option style="display:none;"></option>
+                                            <option style="display:date;"></option>
                                             {% for item in vat1 %}
 
                                             <tr>
@@ -79,6 +79,10 @@
                                             <input type="hidden" name="l_name" value="chembur" />
                                             <input type="submit" value="Check Slots" class="btnAddAction"
                                                 style="color: rgb(0, 0, 0); border: black; background-color: rgb(167, 117, 117); font-size: 20px; height: 45px; width: 140px; border-radius: 6px;" />
+                                            <a href={{ url_for("forecast") }}>
+                                            <input type="button" value="Weather" class="btnAddAction" 
+                                                style="color: rgb(0, 0, 0); border: black; background-color: rgb(167, 117, 117); font-size: 20px; height: 45px; width: 140px; border-radius: 6px;" />
+                                            </a>
                                         </td>
 
                                     </form>
